@@ -5,6 +5,8 @@ import javafx.scene.image.ImageView;
 import pieces.Piece;
 import pieces.PieceConstants;
 
+import java.util.ArrayList;
+
 public class Controller implements PieceConstants{
     public static void initClassic(Square[][] grid,int color){
         if(grid.length!=8||grid[0].length!=8){
@@ -29,6 +31,7 @@ public class Controller implements PieceConstants{
         setSquare(grid, "h8", new Piece(ROOK,BLACK),color);  setSquare(grid, "h7", new Piece(PAWN,BLACK),color);
     }
     public static void setSquare(Square[][] grid,String name, Piece p,int color){
+        //translates between array coordinates and chess board
         int file = name.toCharArray()[0]-96;
         int rank = name.toCharArray()[1]-48;
         if(color==WHITE){grid[file-1][rank-1].setPiece(p);
@@ -38,38 +41,71 @@ public class Controller implements PieceConstants{
 
     }
 
-    public static boolean move(Piece p, Square s0,Square s1){
-        if(isLegal(p,s0,s1)){
+    public static boolean move(Square[][] grid,Square s0,Square s1){
+        Piece p = s0.getPiece();
+        if(p==null){return false;}
+        if(isLegal(grid,s0,s1)){
+            p.move();
             s1.setGraphic(new ImageView(s0.getPiece().getImg()));
             s1.setPiece(s0.getPiece());
             s0.setGraphic(null);
             s0.setPiece(null);
+            return true;
         }
     return false;
     }
-    private static boolean isLegal(Piece p, Square s0,Square s1){
-       /* if(p.getType()==PieceConstants.KING){
-
+    private static boolean isLegal(Square[][] grid,Square s0,Square s1){
+        Piece p = s0.getPiece();
+        if(p.getType()==KING){
+            boolean movement = (Math.abs(s1.getRank()-s0.getRank())<=1)&&(Math.abs(s1.getFile()-s0.getFile())<=1);
+            return movement&& notOccupied(s1,p.getColor());
         }
-        else if (p.getType()==PieceConstants.QUEEN){
-
+        else if (p.getType()==QUEEN){
+            boolean movement = (Math.abs(s1.getRank()-s0.getRank())>0)^(Math.abs(s1.getFile()-s0.getFile())>0)
+                                || Math.abs(s1.getRank()-s0.getRank())==Math.abs(s1.getFile()-s0.getFile());
+            return movement&& notOccupied(s1,p.getColor());
         }
         else if (p.getType()==PieceConstants.ROOK){
-
+            boolean movement = (Math.abs(s1.getRank()-s0.getRank())>0)^(Math.abs(s1.getFile()-s0.getFile())>0);
+            return movement&& notOccupied(s1,p.getColor());
         }
-        else if (p.getType()==PieceConstants.BISHOP){
-
+        else if (p.getType()==BISHOP){
+            boolean movement = Math.abs(s1.getRank()-s0.getRank())==Math.abs(s1.getFile()-s0.getFile());
+            return movement&& notOccupied(s1,p.getColor());
         }
-        else if (p.getType()==PieceConstants.KNIGHT){
-
+        else if (p.getType()==KNIGHT){
+            boolean movement = (Math.abs(s1.getRank()-s0.getRank())==2)&&(Math.abs(s1.getFile()-s0.getFile())==1)
+                                ||(Math.abs(s1.getRank()-s0.getRank())==1)&&(Math.abs(s1.getFile()-s0.getFile())==2);
+            return movement&& notOccupied(s1,p.getColor());
         }
-        else if (p.getType()==PieceConstants.KING){
-
+        else if (p.getType()==PAWN){
+            boolean movement;
+            if(p.getColor()==WHITE){
+                movement = (!p.hasMoved()&&(s1.getRank()-s0.getRank()==1||s1.getRank()-s0.getRank()==2))||(s1.getRank()-s0.getRank()==1);
+            }
+            else{
+                movement = (!p.hasMoved()&&(s1.getRank()-s0.getRank()==-1||s1.getRank()-s0.getRank()==-2))||(s1.getRank()-s0.getRank()==-1);
+            }
+            movement&= s1.getFile()==s0.getFile();
+            return movement&& notOccupied(s1,p.getColor());
         }
-        else if (p.getType()==PieceConstants.PAWN){
-
-        }*/
-       return true;
+       return false;
     }
-
+    public static Square[] getLegalSquares(Square[][] grid,Square s){
+        ArrayList<Square> list = new ArrayList<>();
+        for(int i = 0;i<8;i++){
+            for (int j = 0; j < 8; j++) {
+                if(isLegal(grid,s,grid[i][j])){
+                    list.add(grid[i][j]);
+                }
+            }
+        }
+        return (Square[])list.toArray();
+    }
+    private static boolean notBlocked(Square[][] grid,Square s0,Square s1){
+        return false;
+    }
+    private static boolean notOccupied(Square s1, int color){
+        return s1.getPiece()==null||s1.getPiece().getColor()!=color;
+    }
 }

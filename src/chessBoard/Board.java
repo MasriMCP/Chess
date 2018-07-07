@@ -7,6 +7,9 @@ import main.Controller;
 public class Board extends GridPane implements BoardConstants{
     private Square[][] grid = new Square[8][8];
     private int player;
+    private Square selected;
+    private boolean selecting = false;
+    private Square temp;
     public Board(int player){
         this.player=player;
         BackgroundImage bg= new BackgroundImage(new Image("chessBoard/Board.png",W,H,false,true),
@@ -15,17 +18,23 @@ public class Board extends GridPane implements BoardConstants{
         setBackground(new Background(bg));//setting the background
         for(int i = 0;i<8;i++){
             for (int j = 0; j < 8; j++) {
-                Square temp = grid[i][j];
                 if(player==WHITE)
-                    add(temp=new Square(i+1,j+1),i,9-j);//add the squares to the array and pane
+                    add(grid[i][j]=new Square(i+1,j+1),i,9-j);//add the squares to the array and pane
                 else
-                    add(temp=new Square(i+1,j+1),9-i,j);
-                temp.setOnMouseDragged(e->{
-
+                    add(grid[i][j]=new Square(i+1,j+1),9-i,j);
+                grid[i][j].setOnMouseClicked(e->{
+                    if(!selecting){
+                        selected = (Square)e.getSource();
+                    }
+                    else{
+                        if((Square)e.getSource() != selected){
+                            Controller.move(grid,selected,(Square)e.getSource());
+                        }
+                        selected = null;
+                    }
+                    selecting=!selecting;
                 });
-                temp.setOnMouseReleased(e->{
 
-                });
             }
         }
         Controller.initClassic(grid,player);

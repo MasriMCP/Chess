@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 public class Piece implements PieceConstants {
     private Image img;
     private int type,color;
+    private boolean moved=false;
     public Piece(int type,int color){
         this.type=type;
         this.color = color;
@@ -44,6 +45,15 @@ public class Piece implements PieceConstants {
     public int getColor() {
         return color;
     }
+
+    public boolean hasMoved() {
+        return moved;
+    }
+
+    public void move() {
+        this.moved =true;
+    }
+
     public String toString(){
         String c = color==WHITE?"white ":"black ";
         String t;
@@ -72,4 +82,5 @@ public class Piece implements PieceConstants {
         }
         return c+t;
     }
+
 }

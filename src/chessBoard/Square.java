@@ -16,9 +16,7 @@ public class Square extends Label implements BoardConstants{
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);//an empty image because this is the only solution i found
         setBackground(new Background(bg));
-        setOnMouseClicked(e->{
-            System.out.println(this+", "+piece);
-        });
+
     }
 
     public char getFile() {
