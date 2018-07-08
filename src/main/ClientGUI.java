@@ -70,12 +70,14 @@ public class ClientGUI extends Application implements PieceConstants {
                     if(color==WHITE){
                         waitForAction();
                         sendMove();
+                        b.waiting=true;
                         receiveAction();
                     }
                     else{
                         receiveAction();
                         waitForAction();
                         sendMove();
+                        b.waiting=true;
                     }
                 }
             }
@@ -92,7 +94,7 @@ public class ClientGUI extends Application implements PieceConstants {
         while(b.waiting){
             Thread.sleep(100);
         }
-        b.waiting=true;
+
     }
     private void sendMove() throws IOException{
         int[] move = b.getMove();

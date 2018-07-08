@@ -36,6 +36,7 @@ public class Controller implements PieceConstants{
         int file = name.toCharArray()[0]-96;
         int rank = name.toCharArray()[1]-48;
             grid[file-1][rank-1].setGraphic(new ImageView(p.getImg()));
+            grid[file-1][rank-1].setPiece(p);
 
     }
 

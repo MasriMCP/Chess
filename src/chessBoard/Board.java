@@ -30,6 +30,7 @@ public class Board extends GridPane implements BoardConstants {
                 else
                     add(grid[i][j] = new Square(i + 1, j + 1), 9 - i, j);
                 grid[i][j].setOnMouseClicked(e -> {
+                    if(myTurn)
                     if (!selecting) {
                         selected = (Square) e.getSource();
                     } else {
@@ -51,6 +52,7 @@ public class Board extends GridPane implements BoardConstants {
             }
         }
         Controller.initClassic(grid, player);
+
     }
 
     public int[] getMove() {
