@@ -6,8 +6,12 @@ import chessBoard.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import pieces.PieceConstants;
 
@@ -25,20 +29,30 @@ public class ClientGUI extends Application implements PieceConstants {
     private DataOutputStream toServer;
     private boolean continuePlay = true;
 
-    private String host = "localhost";
+    private String host ;
     private Board b;
     @Override
     public void start(Stage primaryStage) throws Exception {
          b = new Board();
+         Label ip = new Label("enter ip adress:");
+        TextField tf = new TextField();
+        Button ipb = new Button("enter");
+        ipb.setOnAction(e->{
+            host = tf.getText();
+            connect();
+        });
+        HBox ipp = new HBox();
+        ipp.getChildren().addAll(ip,tf,ipb);
         BorderPane pane = new BorderPane();
         pane.setTop(title);
         pane.setCenter(b);
         pane.setBottom(status);
+        pane.setRight(ipp);
         Scene s = new Scene(pane,1200,1200);
         primaryStage.setScene(s);
         primaryStage.setTitle("Chess");
         primaryStage.show();
-        connect();
+
     }
     private void connect(){
         try{

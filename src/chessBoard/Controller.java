@@ -83,12 +83,15 @@ public class Controller implements PieceConstants{
         else if (p.getType()==PAWN){
             boolean movement;
             if(p.getColor()==WHITE){
-                movement = (!p.hasMoved()&&(s1.getRank()-s0.getRank()==1||s1.getRank()-s0.getRank()==2))||(s1.getRank()-s0.getRank()==1);
+                movement = ((!p.hasMoved()&&(s1.getRank()-s0.getRank()==1||s1.getRank()-s0.getRank()==2))||(s1.getRank()-s0.getRank()==1)
+                &&s1.getFile()==s0.getFile())&&(notOccupied(s1,otherColor(p.getColor())))||((s1.getRank()-s0.getRank()>0&&Math.abs(s1.getRank()-s0.getRank())>0)&&
+                        (!notOccupied(s1,otherColor(p.getColor()))));
             }
             else{
-                movement = (!p.hasMoved()&&(s1.getRank()-s0.getRank()==-1||s1.getRank()-s0.getRank()==-2))||(s1.getRank()-s0.getRank()==-1);
+                movement = ((!p.hasMoved()&&(s1.getRank()-s0.getRank()==-1||s1.getRank()-s0.getRank()==-2))||(s1.getRank()-s0.getRank()==-1)
+                &&s1.getFile()==s0.getFile())&&(notOccupied(s1,otherColor(p.getColor())))||((s1.getRank()-s0.getRank()<0&&Math.abs(s1.getRank()-s0.getRank())>0))
+                &&(!notOccupied(s1,otherColor(p.getColor())));
             }
-            movement&= s1.getFile()==s0.getFile();
             return movement&& notOccupied(s1,p.getColor());
         }
        return false;
@@ -236,5 +239,8 @@ public class Controller implements PieceConstants{
     }
     public static boolean isDraw(){
         return false; //TODO this too
+    }
+    private static int otherColor(int c){
+        return (c==WHITE?BLACK:WHITE);
     }
 }
