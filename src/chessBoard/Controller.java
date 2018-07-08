@@ -1,6 +1,6 @@
-package main;
+package chessBoard;
 
-import chessBoard.Square;
+
 import javafx.scene.image.ImageView;
 import pieces.Piece;
 import pieces.PieceConstants;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class Controller implements PieceConstants{
     public static void initClassic(Square[][] grid,int color){
+        //puts all the pieces in classical format
         if(grid.length!=8||grid[0].length!=8){
             throw new IllegalArgumentException();
         }
@@ -34,10 +35,7 @@ public class Controller implements PieceConstants{
         //translates between array coordinates and chess board
         int file = name.toCharArray()[0]-96;
         int rank = name.toCharArray()[1]-48;
-        if(color==WHITE){grid[file-1][rank-1].setPiece(p);
-            grid[file-1][rank-1].setGraphic(new ImageView(p.getImg()));}
-        else{grid[7-(file-1)][7-(rank-1)].setPiece(p);
-            grid[7-(file-1)][7-(rank-1)].setGraphic(new ImageView(p.getImg()));}
+            grid[file-1][rank-1].setGraphic(new ImageView(p.getImg()));
 
     }
 
@@ -54,6 +52,9 @@ public class Controller implements PieceConstants{
         }
     return false;
     }
+    public static boolean move(Square[][] grid,int f0,int r0,int f1,int r1){
+        return move(grid,grid[f0-1][r0-1],grid[f1-1][r1-1]);
+    }
     private static boolean isLegal(Square[][] grid,Square s0,Square s1){
         Piece p = s0.getPiece();
         if(p.getType()==KING){
@@ -63,15 +64,15 @@ public class Controller implements PieceConstants{
         else if (p.getType()==QUEEN){
             boolean movement = (Math.abs(s1.getRank()-s0.getRank())>0)^(Math.abs(s1.getFile()-s0.getFile())>0)
                                 || Math.abs(s1.getRank()-s0.getRank())==Math.abs(s1.getFile()-s0.getFile());
-            return movement&& notOccupied(s1,p.getColor());
+            return movement&& notOccupied(s1,p.getColor())&&notBlocked(grid,s0,s1);
         }
         else if (p.getType()==PieceConstants.ROOK){
             boolean movement = (Math.abs(s1.getRank()-s0.getRank())>0)^(Math.abs(s1.getFile()-s0.getFile())>0);
-            return movement&& notOccupied(s1,p.getColor());
+            return movement&& notOccupied(s1,p.getColor())&&notBlocked(grid,s0,s1);
         }
         else if (p.getType()==BISHOP){
             boolean movement = Math.abs(s1.getRank()-s0.getRank())==Math.abs(s1.getFile()-s0.getFile());
-            return movement&& notOccupied(s1,p.getColor());
+            return movement&& notOccupied(s1,p.getColor())&&notBlocked(grid,s0,s1);
         }
         else if (p.getType()==KNIGHT){
             boolean movement = (Math.abs(s1.getRank()-s0.getRank())==2)&&(Math.abs(s1.getFile()-s0.getFile())==1)
@@ -103,9 +104,136 @@ public class Controller implements PieceConstants{
         return (Square[])list.toArray();
     }
     private static boolean notBlocked(Square[][] grid,Square s0,Square s1){
+        Piece p = s0.getPiece();
+        int file0 = s0.getFile()-96;
+        int rank0 = s0.getRank();
+        int file1 = s1.getFile()-96;
+        int rank1 = s1.getRank();
+
+        System.out.println(rank0+" "+rank1);
+
+        System.out.println(file0+" "+file1);
+        if (p.getType()==QUEEN){
+            if(file0<file1&&rank0<rank1){
+                for(int i=file0+1,j=rank0+1;i<file1;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file1<file0&&rank0<rank1){
+                for(int i=file1+1,j=rank0+1;i<file0;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file0<file1&&rank1<rank0){
+                for(int i=file0+1,j=rank1+1;i<file1;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file1<file0&&rank1<rank0){
+                for(int i=file1+1,j=rank1+1;i<file0;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file0<file1){
+                for (int i = file0+1; i < file1; i++) {
+                    if(grid[i-1][rank0-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file1<file0){
+                for (int i = file1+1; i < file0; i++) {
+                    if(grid[i-1][rank0-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+
+            else if(rank0<rank1){
+
+                for (int i = rank0+1; i < rank1; i++) {
+                    if(grid[file0-1][i-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(rank1<rank0){
+                for (int i = rank1+1; i < rank0; i++) {
+                    if(grid[file0-1][i-1].getPiece()!=null){return false;}
+                }
+                return true;
+
+            }
+
+        }
+        else if (p.getType()==ROOK){
+                if(file0<file1){
+                    for (int i = file0+1; i < file1; i++) {
+                        if(grid[i-1][rank0-1].getPiece()!=null){return false;}
+                    }
+                    return true;
+                }
+                else if(file1<file0){
+                    for (int i = file1+1; i < file0; i++) {
+                        if(grid[i-1][rank0-1].getPiece()!=null){return false;}
+                    }
+                    return true;
+                }
+
+                else if(rank0<rank1){
+
+                    for (int i = rank0+1; i < rank1; i++) {
+                        if(grid[file0-1][i-1].getPiece()!=null){return false;}
+                    }
+                    return true;
+                }
+                else if(rank1<rank0){
+                    for (int i = rank1+1; i < rank0; i++) {
+                        if(grid[file0-1][i-1].getPiece()!=null){return false;}
+                    }
+                    return true;
+
+            }
+        }
+        else if (p.getType()==PieceConstants.BISHOP){
+            if(file0<file1&&rank0<rank1){
+                for(int i=file0+1,j=rank0+1;i<file1;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file1<file0&&rank0<rank1){
+                for(int i=file1+1,j=rank0+1;i<file0;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file0<file1&&rank1<rank0){
+                for(int i=file0+1,j=rank1+1;i<file1;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+            else if(file1<file0&&rank1<rank0){
+                for(int i=file1+1,j=rank1+1;i<file0;i++,j++){
+                    if(grid[i-1][j-1].getPiece()!=null){return false;}
+                }
+                return true;
+            }
+        }
+        else if (p.getType()==PieceConstants.PAWN){
+
+        }
         return false;
     }
     private static boolean notOccupied(Square s1, int color){
         return s1.getPiece()==null||s1.getPiece().getColor()!=color;
+    }
+    public static boolean hasWon(int color){
+        return false;//TODO this thing
+    }
+    public static boolean isDraw(){
+        return false; //TODO this too
     }
 }

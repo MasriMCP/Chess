@@ -8,5 +8,9 @@ public interface PieceConstants {
         KNIGHT=4,
         PAWN=5,
         WHITE=6,
-        BLACK=7;
+        BLACK=7,
+        WIN_WHITE=8,
+        WIN_BLACk=9,
+        DRAW=10,
+        CONTINUE=11;
 }
