@@ -66,7 +66,7 @@ public class Server extends Application implements PieceConstants {
                 DataOutputStream toP1 = new DataOutputStream(p1.getOutputStream());
                 DataOutputStream toP2 = new DataOutputStream(p2.getOutputStream());
                 toP1.writeInt(1);//alert player 1 that the game started
-                while(true){
+                while(p1.isConnected()&&p2.isConnected()){
                     int file0 = fromP1.readInt();
                     int rank0 = fromP1.readInt();
                     int file1 = fromP1.readInt();

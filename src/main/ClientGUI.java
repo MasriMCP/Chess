@@ -116,6 +116,7 @@ public class ClientGUI extends Application implements PieceConstants {
         toServer.writeInt(move[1]);
         toServer.writeInt(move[2]);
         toServer.writeInt(move[3]);
+        Platform.runLater(()->status.setText("other player's turn"));
     }
     private void receiveAction()throws IOException{
         int s = fromServer.readInt();
@@ -140,9 +141,8 @@ public class ClientGUI extends Application implements PieceConstants {
 
         Platform.runLater(()->{
             int[] move = b.getMove();
-            Arrays.toString(move);
             Controller.move(b.getGrid(),move[0],move[1],move[2],move[3]);
-            status.setText("other player's turn");
+
         });
     }
 }

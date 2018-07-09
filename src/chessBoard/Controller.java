@@ -58,8 +58,14 @@ public class Controller implements PieceConstants{
     }
     private static boolean isLegal(Square[][] grid,Square s0,Square s1){
         Piece p = s0.getPiece();
-        if(p.getType()==KING){
-            boolean movement = (Math.abs(s1.getRank()-s0.getRank())<=1)&&(Math.abs(s1.getFile()-s0.getFile())<=1);
+        if(p.getType()==KING) {
+            boolean movement = (Math.abs(s1.getRank() - s0.getRank()) <= 1) && (Math.abs(s1.getFile() - s0.getFile()) <= 1);
+            /*if(p.getColor()==WHITE&&!p.hasMoved()){
+                movement |= ((s1.toString().equals("a1"))||(s1.toString().equals("h1"))&&!s1.getPiece().hasMoved());
+            }
+            else{
+                movement |= ((s1.toString().equals("a8"))||(s1.toString().equals("h8"))&&!s1.getPiece().hasMoved());
+            }*/
             return movement&& notOccupied(s1,p.getColor());
         }
         else if (p.getType()==QUEEN){
@@ -92,7 +98,7 @@ public class Controller implements PieceConstants{
                 &&s1.getFile()==s0.getFile())&&(notOccupied(s1,otherColor(p.getColor())))||((s1.getRank()-s0.getRank()<0&&Math.abs(s1.getRank()-s0.getRank())>0))
                 &&(!notOccupied(s1,otherColor(p.getColor())));
             }
-            return movement&& notOccupied(s1,p.getColor());
+            return movement&& notOccupied(s1,p.getColor())&&notBlocked(grid,s0,s1);
         }
        return false;
     }
@@ -113,10 +119,6 @@ public class Controller implements PieceConstants{
         int rank0 = s0.getRank();
         int file1 = s1.getFile()-96;
         int rank1 = s1.getRank();
-
-        System.out.println(rank0+" "+rank1);
-
-        System.out.println(file0+" "+file1);
         if (p.getType()==QUEEN){
             if(file0<file1&&rank0<rank1){
                 for(int i=file0+1,j=rank0+1;i<file1;i++,j++){
@@ -201,32 +203,22 @@ public class Controller implements PieceConstants{
             }
         }
         else if (p.getType()==PieceConstants.BISHOP){
-            if(file0<file1&&rank0<rank1){
-                for(int i=file0+1,j=rank0+1;i<file1;i++,j++){
+            if(file0-file1==rank0-rank1){
+
+                for(int i=(file0<file1?file0+1:file1+1),j=(rank0<rank1?rank0+1:rank1+1);i<(file1<file0?file0:file1);i++,j++){
                     if(grid[i-1][j-1].getPiece()!=null){return false;}
                 }
                 return true;
             }
-            else if(file1<file0&&rank0<rank1){
-                for(int i=file1+1,j=rank0+1;i<file0;i++,j++){
-                    if(grid[i-1][j-1].getPiece()!=null){return false;}
-                }
-                return true;
-            }
-            else if(file0<file1&&rank1<rank0){
-                for(int i=file0+1,j=rank1+1;i<file1;i++,j++){
-                    if(grid[i-1][j-1].getPiece()!=null){return false;}
-                }
-                return true;
-            }
-            else if(file1<file0&&rank1<rank0){
-                for(int i=file1+1,j=rank1+1;i<file0;i++,j++){
+            else if(file0-file1==rank1-rank0){
+                for(int i=(file0<file1?file0+1:file1+1),j=(rank0>rank1?rank0-1:rank1-1);i<(file1<file0?file0:file1);i++,j--){
                     if(grid[i-1][j-1].getPiece()!=null){return false;}
                 }
                 return true;
             }
         }
         else if (p.getType()==PieceConstants.PAWN){
+                return notOccupied(grid[file0-1][p.getColor()==WHITE?rank0:rank0-2],otherColor(p.getColor()));
 
         }
         return false;

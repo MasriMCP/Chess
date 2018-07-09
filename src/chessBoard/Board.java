@@ -1,18 +1,20 @@
 package chessBoard;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+
+import java.util.Arrays;
 
 public class Board extends GridPane implements BoardConstants {
     private Square[][] grid = new Square[8][8];
     private int[] move = new int[4];//array stores the last move played by either player
-    private int player;
+    private int color;
     private Square selected;
     private boolean selecting = false;
     private Square temp;
     public boolean myTurn=true, waiting=true;
     public Board() {
-        this.player = player;
         setPrefSize(W, H);
         BackgroundImage bg = new BackgroundImage(new Image("chessBoard/Board.png", W, H, false, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
@@ -21,18 +23,19 @@ public class Board extends GridPane implements BoardConstants {
 
     }
 
-    public void init(int player) {
-        if(player==BLACK) myTurn = false;
+    public void init(int color) {
+        if(color==BLACK) myTurn = false;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (player == WHITE)
+                if (color == WHITE)
                     add(grid[i][j] = new Square(i + 1, j + 1), i, 9 - j);//add the squares to the array and pane
                 else
                     add(grid[i][j] = new Square(i + 1, j + 1), 9 - i, j);
                 grid[i][j].setOnMouseClicked(e -> {
                     if(myTurn)
-                    if (!selecting) {
+                    if (!selecting&&((Square) e.getSource()).getPiece()!=null&&((Square) e.getSource()).getPiece().getColor()==color) {
                         selected = (Square) e.getSource();
+                        ((Square) e.getSource()).setBG("chessBoard/selected.png");
                     } else {
                         if ((Square) e.getSource() != selected) {
                             if(Controller.move(grid, selected, (Square) e.getSource())) {
@@ -40,18 +43,21 @@ public class Board extends GridPane implements BoardConstants {
                                         selected.getRank(),
                                         ((Square) e.getSource()).getFile() - 96,
                                         ((Square) e.getSource()).getRank());
+                                //System.out.println(Arrays.toString(move));
                                 waiting = false;
                                 myTurn = false;
                             }
                         }
+                        selected.setBG("chessBoard/null.png");
                         selected = null;
+
                     }
                     selecting = !selecting;
                 });
 
             }
         }
-        Controller.initClassic(grid, player);
+        Controller.initClassic(grid, color);
 
     }
 

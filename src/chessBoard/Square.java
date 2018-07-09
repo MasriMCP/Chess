@@ -12,10 +12,7 @@ public class Square extends Label implements BoardConstants{
         this.file = file;
         this.rank = rank;
         setPrefSize(W/8,H/8);
-        BackgroundImage bg= new BackgroundImage(new Image("chessBoard/null.png",W/8,H/8,false,true),
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                BackgroundSize.DEFAULT);//an empty image because this is the only solution i found
-        setBackground(new Background(bg));
+        setBG("chessBoard/null.png");
 
     }
 
@@ -36,6 +33,12 @@ public class Square extends Label implements BoardConstants{
     }
 
     public String toString(){
-        return getFile()+""+rank;
+        return getFile()+""+rank+": "+(piece==null?"empty":piece.toString());
+    }
+    public void setBG(String s){
+        BackgroundImage bg= new BackgroundImage(new Image(s,W/8,H/8,false,true),
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);//an empty image because this is the only solution i found
+        setBackground(new Background(bg));
     }
 }
